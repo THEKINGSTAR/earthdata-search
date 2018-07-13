@@ -116,6 +116,38 @@ ns.Collection = do (ko
       @isMaxOrderSizeReached = @computed(@_computeMaxOrderSize, this, deferEvaluation: true)
 
       @hasEchoFormLoaded = ko.observable(false)
+      
+      # This simulates getting UMM-S records of a specific type (one's that can be handed off too) for the collection we are detailing.
+      # The part of the S record that will allow us to construct the URL is inlined below. It is based on the schema.org action concept.
+      ho_clients = [
+        {
+          "@context": "http://schema.org",
+          "@type": "WebSite",
+          "name": "Giovanni",
+          "collections": ["C1200187767-EDF_OPS"],
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://giovanni.gsfc.nasa.gov/giovanni/#service=TmAvMp&starttime={start?}&endtime={end?}&bbox={box?}&dataKeyword={searchTerms?}&data={var_names?}"
+          }
+        },
+        {
+          "@context": "http://schema.org",
+          "@type": "WebSite",
+          "name": "State Of The Ocean",
+          "collections": ["C1200268801-EDF_DEV01"],
+          "url": "https://podaac-tools.jpl.nasa.gov/soto/#b=BlueMarble_ShadedRelief_Bathymetry",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://podaac-tools.jpl.nasa.gov/soto/#b=BlueMarble_ShadedRelief_Bathymetry&l={soto:layers?}&ve={geo:box?}&d={soto:date?}"
+          }
+        }
+        ]
+      
+      # What collection is this? Remove entries that don't match it
+      
+      @applicable_ho_clients = (client for client in ho_clients when @id in client.collections)
+      
+      @hand_off_clients = ko.observable(@applicable_ho_clients)
 
     _computeMaxOrderSize: ->
       hits = 0
@@ -311,7 +343,27 @@ ns.Collection = do (ko
     metadata_url: (collection, e) ->
       win = window.open(@details()["#{e.target.attributes['data-metadata-type'].value.toLowerCase()}_url"], '_blank')
       win.focus()
-
+      
+    hand_off_url: (collection, e) ->
+      coll = collection.short_name._latestValue
+      url = 'https://giovanni.gsfc.nasa.gov/giovanni/#service=TmAvMp&dataKeyword=' + coll
+      
+      if collection.query && collection.query.spatial && collection.query.spatial._latestValue
+        # TODO polygons
+        spatial = collection.query.spatial._latestValue.split(':')[1] + ',' + collection.query.spatial._latestValue.split(':')[2]
+        url = url + '&bbox=' + spatial.replace(':', ',')
+      
+      if collection.query && collection.query.temporalComponent && collection.query.temporalComponent._latestValue
+        startTime = collection.query.temporalComponent._latestValue.split(',')[0]
+        endTime = collection.query.temporalComponent._latestValue.split(',')[1]
+        if startTime
+          url = url + '&starttime=' + startTime
+        if endTime
+          url = url + '&endtime=' + endTime
+      
+      win = window.open(url, '_blank')
+      win.focus()
+      
     fromJson: (jsonObj) ->
       @json = jsonObj
 
