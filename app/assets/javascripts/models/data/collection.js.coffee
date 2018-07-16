@@ -348,8 +348,9 @@ ns.Collection = do (ko
       coll = collection.short_name._latestValue
       url = 'https://giovanni.gsfc.nasa.gov/giovanni/#service=TmAvMp&dataKeyword=' + coll
       
-      if collection.query && collection.query.spatial && collection.query.spatial._latestValue
+      if collection.query && collection.query.spatial && collection.query.spatial._latestValue && collection.query.spatial._latestValue.slice(0, 'bounding_box:'.length) == 'bounding_box:'
         # TODO polygons
+        alert(collection.query.spatial._latestValue);
         spatial = collection.query.spatial._latestValue.split(':')[1] + ',' + collection.query.spatial._latestValue.split(':')[2]
         url = url + '&bbox=' + spatial.replace(':', ',')
       
