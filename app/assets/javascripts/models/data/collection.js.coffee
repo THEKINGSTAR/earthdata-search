@@ -125,6 +125,7 @@ ns.Collection = do (ko
           "@type": "WebSite",
           "name": "Giovanni",
           "collections": ["C1200187767-EDF_OPS"],
+          "url": "https://giovanni.gsfc.nasa.gov/giovanni/#service=TmAvMp",
           "potentialAction": {
             "@type": "SearchAction",
             "target": "https://giovanni.gsfc.nasa.gov/giovanni/#service=TmAvMp&starttime={start?}&endtime={end?}&bbox={box?}&dataKeyword={searchTerms?}&data={var_names?}"
@@ -344,24 +345,39 @@ ns.Collection = do (ko
       win = window.open(@details()["#{e.target.attributes['data-metadata-type'].value.toLowerCase()}_url"], '_blank')
       win.focus()
       
-    hand_off_url: (collection, e) ->
-      coll = collection.short_name._latestValue
-      url = 'https://giovanni.gsfc.nasa.gov/giovanni/#service=TmAvMp&dataKeyword=' + coll
+    hand_off_url: (collection, hand_off_info, e) ->
+      url = hand_off_info.url
+      
+      if hand_off_info.name == 'Giovanni'
+        coll = collection.short_name._latestValue
+        url = url + '&dataKeyword=' + coll
+      else if hand_off_info.name == 'State Of The Ocean'
+        # SOTO doesn't accept any CMR-known collection descriptor as a layer parameter. Hard-coding for now...
+        url = url + '&l=GHRSST_L4_MUR_Sea_Surface_Temperature(la=true)'
       
       if collection.query && collection.query.spatial && collection.query.spatial._latestValue && collection.query.spatial._latestValue.slice(0, 'bounding_box:'.length) == 'bounding_box:'
-        # TODO polygons
-        alert(collection.query.spatial._latestValue);
+        # TODO polygons etc.
         spatial = collection.query.spatial._latestValue.split(':')[1] + ',' + collection.query.spatial._latestValue.split(':')[2]
-        url = url + '&bbox=' + spatial.replace(':', ',')
-      
+        if hand_off_info.name == 'Giovanni'
+          url = url + '&bbox=' + spatial.replace(':', ',')
+        else if hand_off_info.name == 'State Of The Ocean'
+          url = url + '&ve=' + spatial.replace(':', ',')
+          
       if collection.query && collection.query.temporalComponent && collection.query.temporalComponent._latestValue
         startTime = collection.query.temporalComponent._latestValue.split(',')[0]
         endTime = collection.query.temporalComponent._latestValue.split(',')[1]
-        if startTime
-          url = url + '&starttime=' + startTime
-        if endTime
-          url = url + '&endtime=' + endTime
+        
+        if hand_off_info.name == 'Giovanni'
+          if startTime
+            url = url + '&starttime=' + startTime
+          if endTime
+            url = url + '&endtime=' + endTime
+        else if hand_off_info.name == 'State Of The Ocean'
+          if startTime
+            # SOTO only takes the 'date' component of the temporal start constraint
+            url = url + '&d=' + startTime.split('T')[0]
       
+      #alert(url)
       win = window.open(url, '_blank')
       win.focus()
       
