@@ -146,9 +146,9 @@ ns.Collection = do (ko
       
       # What collection is this? Remove entries that don't match it
       
-      @applicable_ho_clients = (client for client in ho_clients when @id in client.collections)
+      applicable_ho_clients = (client for client in ho_clients when @id in client.collections)
       
-      @hand_off_clients = ko.observable(@applicable_ho_clients)
+      @hand_off_clients = ko.observable(applicable_ho_clients)
 
     _computeMaxOrderSize: ->
       hits = 0
@@ -346,6 +346,8 @@ ns.Collection = do (ko
       win.focus()
       
     hand_off_url: (collection, hand_off_info, e) ->
+      # In the real world, we would use the template and parameter rules to construct the handoff url.
+      # For now we use the url element and tag stuff on in a hard-coded fashion for the two collections we support
       url = hand_off_info.url
       
       if hand_off_info.name == 'Giovanni'
@@ -357,11 +359,11 @@ ns.Collection = do (ko
       
       if collection.query && collection.query.spatial && collection.query.spatial._latestValue && collection.query.spatial._latestValue.slice(0, 'bounding_box:'.length) == 'bounding_box:'
         # TODO polygons etc.
-        spatial = collection.query.spatial._latestValue.split(':')[1] + ',' + collection.query.spatial._latestValue.split(':')[2]
+        spatial = collection.query.spatial._latestValue.split(':')[1] + ',' + collection.query.spatial._latestValue.split(':')[2].replace(':', ',')
         if hand_off_info.name == 'Giovanni'
-          url = url + '&bbox=' + spatial.replace(':', ',')
+          url = url + '&bbox=' + spatial
         else if hand_off_info.name == 'State Of The Ocean'
-          url = url + '&ve=' + spatial.replace(':', ',')
+          url = url + '&ve=' + spatial
           
       if collection.query && collection.query.temporalComponent && collection.query.temporalComponent._latestValue
         startTime = collection.query.temporalComponent._latestValue.split(',')[0]
@@ -377,7 +379,6 @@ ns.Collection = do (ko
             # SOTO only takes the 'date' component of the temporal start constraint
             url = url + '&d=' + startTime.split('T')[0]
       
-      #alert(url)
       win = window.open(url, '_blank')
       win.focus()
       
