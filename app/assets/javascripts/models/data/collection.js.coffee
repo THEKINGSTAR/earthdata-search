@@ -346,7 +346,7 @@ ns.Collection = do (ko
     hand_off_url: (collection, hand_off_info, e) ->
       # In the real world, we would use the template and parameter rules to construct the handoff url.
       # For now we use the url element and tag stuff on in a hard-coded fashion for the two collections we support
-      alert('Yo!')
+      
       url = hand_off_info.url
       
       if hand_off_info.name == 'Giovanni'
@@ -380,6 +380,42 @@ ns.Collection = do (ko
       
       win = window.open(url, '_blank')
       win.focus()
+      
+    hand_off_url_var: (hand_off_info, project_collection, e) ->
+          
+          collection = project_collection.collection
+          url = hand_off_info.url
+          
+          if hand_off_info.name == 'Giovanni'
+            coll = collection.short_name._latestValue
+            url = url + '&dataKeyword=' + coll
+          
+          if collection.query && collection.query.spatial && collection.query.spatial._latestValue && collection.query.spatial._latestValue.slice(0, 'bounding_box:'.length) == 'bounding_box:'
+            # TODO polygons etc.
+            spatial = collection.query.spatial._latestValue.split(':')[1] + ',' + collection.query.spatial._latestValue.split(':')[2].replace(':', ',')
+            if hand_off_info.name == 'Giovanni'
+              url = url + '&bbox=' + spatial
+           
+          if collection.query && collection.query.temporalComponent && collection.query.temporalComponent._latestValue
+            startTime = collection.query.temporalComponent._latestValue.split(',')[0]
+            endTime = collection.query.temporalComponent._latestValue.split(',')[1]
+            
+            if hand_off_info.name == 'Giovanni'
+              if startTime
+                url = url + '&starttime=' + startTime
+              if endTime
+                url = url + '&endtime=' + endTime
+                
+          if project_collection.selectedVariables != null
+            url = url + '&data='
+            for variable in project_collection.selectedVariables._latestValue
+              do ->
+                url = url + collection.short_name._latestValue + '_' + collection.version_id + '_' + variable.umm._latestValue.Name + ','
+            # Remove the last comma
+            url = url.substring(0, url.length - 1)
+          alert(url)
+          win = window.open(url, '_blank')
+          win.focus()
       
     fromJson: (jsonObj) ->
       @json = jsonObj

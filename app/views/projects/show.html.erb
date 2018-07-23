@@ -40,7 +40,14 @@
           <ul data-bind="foreach: selectedVariables()">
             <li data-bind="text: $data.displayName()"></li>
           </ul>
-          <p data-bind="text: $data.collection.hand_off_clientsx.length"></p>
+          <!-- ko if: $data.collection.id == 'C1200187767-EDF_OPS' -->
+          <div class="dropdown detail-dropdown">
+            <a href="#" data-toggle="dropdown" class="button dropdown-button" aria-expanded="false">Client Hand Offs <i class="fa fa-caret-down"></i></a>
+            <ul class="dropdown-menu" >
+              <li><a href='#' class="dropdown-link" data-bind="click: $data.collection.hand_off_url_var.bind($data.collection.collection, {'name': 'Giovanni', 'url': 'https://giovanni.gsfc.nasa.gov/giovanni/#service=TmAvMp'})">Giovanni</a></li>
+            </ul>
+          </div>
+          <!-- /ko -->
         </li>
         <!-- / -->
         <!-- /ko -->
