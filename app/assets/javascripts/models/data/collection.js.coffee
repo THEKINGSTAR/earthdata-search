@@ -145,9 +145,7 @@ ns.Collection = do (ko
         ]
       
       # What collection is this? Remove entries that don't match it
-      
       applicable_ho_clients = (client for client in ho_clients when @id in client.collections)
-      
       @hand_off_clients = ko.observable(applicable_ho_clients)
 
     _computeMaxOrderSize: ->
@@ -348,6 +346,7 @@ ns.Collection = do (ko
     hand_off_url: (collection, hand_off_info, e) ->
       # In the real world, we would use the template and parameter rules to construct the handoff url.
       # For now we use the url element and tag stuff on in a hard-coded fashion for the two collections we support
+      alert('Yo!')
       url = hand_off_info.url
       
       if hand_off_info.name == 'Giovanni'

@@ -40,9 +40,11 @@
           <ul data-bind="foreach: selectedVariables()">
             <li data-bind="text: $data.displayName()"></li>
           </ul>
+          <p data-bind="text: $data.collection.hand_off_clientsx.length"></p>
         </li>
         <!-- / -->
         <!-- /ko -->
+        
       </ul>
       <h3>Transformations</h3>
       <h3>Output Formats</h3>
