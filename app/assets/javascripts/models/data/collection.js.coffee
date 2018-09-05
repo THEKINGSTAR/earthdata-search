@@ -380,7 +380,8 @@ ns.Collection = do (ko
       
       win = window.open(url, '_blank')
       win.focus()
-      
+    
+    # Yes, this is a nasty, hacky piece of code.
     hand_off_url_var: (hand_off_info, project_collection, e) ->
           
           collection = project_collection.collection
@@ -413,7 +414,6 @@ ns.Collection = do (ko
                 url = url + collection.short_name._latestValue + '_' + collection.version_id + '_' + variable.umm._latestValue.Name + ','
             # Remove the last comma
             url = url.substring(0, url.length - 1)
-          alert(url)
           win = window.open(url, '_blank')
           win.focus()
       
