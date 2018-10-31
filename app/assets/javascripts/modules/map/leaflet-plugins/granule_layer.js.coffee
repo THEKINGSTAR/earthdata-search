@@ -70,7 +70,7 @@ ns.GranuleLayer = do (L
     _reset: (e) ->
       @_backTiles = {}
       tilesToLoad = @_tilesToLoad
-      L.TileLayer.prototype._reset.call(this, e)
+      # L.TileLayer.prototype._reset.call(this, e)
       @fire('load') if @_tilesToLoad > 0
 
     _getBackTile: (tilePoint) ->

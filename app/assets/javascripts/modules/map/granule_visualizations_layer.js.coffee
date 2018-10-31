@@ -4,7 +4,7 @@ ns = @edsc.map
 ns.GranuleVisualizationsLayer = do (L, dateUtil=@edsc.util.date, extend = $.extend, GranuleLayer=ns.L.GranuleLayer, project = if @edsc.page? then @edsc.page.project else false) ->
   #MIN_PAGE_SIZE = 100
 
-  class GranuleVisualizationsLayer
+  class GranuleVisualizationsLayer extends L.Layer
     constructor: ->
       @_collectionIdsToLayers = {}
 
